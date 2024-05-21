@@ -3,17 +3,27 @@ import sys
 import base64
 import os
 import json
-import configparser
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import yaml
 
-config_path = ".config/config.ini"
+base = os.path.dirname(os.path.abspath(__file__))
+config_path = f"{base}/.config/config.yaml"
 
-def config_read(path):
-    config = configparser.ConfigParser()
-    config.read(path, encoding='utf-8')
+
+def get_config(config_path):
+    print(config_path)
+    if os.path.isfile(config_path):
+        print(f'{config_path} ok')
+    else:
+        print(f'{config_path} not found program shutdown')
+        sys.exit(1)
+
+    with open(config_path, 'r', encoding="UTF-8") as f:
+        config = yaml.load(f,Loader=yaml.FullLoader)
     return config
+
 
 def gen_key(password):
     salt = os.urandom(16)
@@ -26,6 +36,7 @@ def gen_key(password):
     key = base64.urlsafe_b64encode(kdf.derive(password))
     return key 
 
+
 def encode_base64(token, key):
     f = Fernet(key)
     bytes_encode=token.encode('ascii')
@@ -33,12 +44,14 @@ def encode_base64(token, key):
     base64_token = base64_encode.decode('ascii')
     return base64_token
 
+
 def decode_base64(base64_token, key):
     f = Fernet(key)
     bytes_base64_token = base64_token.encode('ascii')
     base64_decode = f.decrypt(bytes_base64_token)
     token = base64_decode.decode('ascii')
     return token
+
 
 def encode_jwt(json, key, dp_hm):
     print("create JWT")
@@ -48,6 +61,7 @@ def encode_jwt(json, key, dp_hm):
     print("---------------------------")
     base64_token = encode_base64(token, key)
     return base64_token
+
 
 def decode_jwt(token, key, dp_hms):
     print("base64 decoding JWT")
@@ -59,13 +73,14 @@ def decode_jwt(token, key, dp_hms):
     return decode
 
 
+
 if __name__ == "__main__":
     file = sys.argv[1]
     UID = sys.argv[2]
     json1 = json.load(open(file, 'r'))
-    config = config_read(config_path)
+    config = get_config(config_path)
     
-    # JWT Password 생성
+    # # JWT Password 생성
     # password = b"seongi_test"
     # print(gen_key(password))
     # sys.exit()
@@ -79,7 +94,7 @@ if __name__ == "__main__":
     # Json을 Password로 암호화
     a = encode_jwt(json1, key, dp_hm)
     print(a)
-    with (open(f'.config/{UID}_jwt', 'w')) as f:
+    with (open(f'{base}/.config/{UID}_jwt', 'w')) as f:
         f.write(a)
     
     # 암호화된 Json 내용을 JWT Password를 이용한 복호화
