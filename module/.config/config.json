@@ -3,6 +3,7 @@
 	"upload": {
 		"bucket": "s3 bucket",
 		"arn": "arn:aws:iam::xxxxxxxx:role/role_name",
-		"session_name": "seongi_session"
+		"session_name": "seongi_session",
+		"domain": "https://www.test.com"
 	}
 }
