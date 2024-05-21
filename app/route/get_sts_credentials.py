@@ -46,8 +46,17 @@ def get_sts_credentials(jwt_info):
                 'status': True,
                 'access_key': credentials['AccessKeyId'],
                 'secret_key': credentials['SecretAccessKey'],
-                'session_token': credentials['SessionToken']
+                'session_token': credentials['SessionToken'],
+                'bucket': jwt_info['upload']['bucket'],
+                'arn': jwt_info['upload']['arn'],
+                'domain': jwt_info['upload']['domain']
             }
+        else:
+            response = {
+                'status': False,
+                'msg': "check please token Value"
+            }
+            return response
     except:
         response = {
             'status': False,
