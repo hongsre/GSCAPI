@@ -85,7 +85,7 @@ if __name__ == "__main__":
     # print(gen_key(password))
     # sys.exit()
     
-    key = config['decode']['key'].encode('ascii')
+    key = config['decode']['key']
     dp_hms = config['decode']['dp_hms']
     dp_hm = config['decode']['dp_hm']
     print(key)
